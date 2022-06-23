@@ -1,3 +1,7 @@
 [submodule "Tautulli/docker-tautulli2discord"]
 	path = Tautulli/docker-tautulli2discord
 	url = https://github.com/fscorrupt/docker-tautulli2discord
+[submodule "Tautulli/Tautulli/docker-tautulli2discord"]
+	path = Tautulli/Tautulli/docker-tautulli2discord
+	url = https://github.com/fscorrupt/docker-tautulli2discord.git
+	branch = master
