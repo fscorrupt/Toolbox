@@ -28,7 +28,6 @@ Function printer-info {
 	$copycolor = (Invoke-SnmpGet -IpAddress $IP -Oid 1.3.6.1.4.1.18334.1.1.1.5.7.2.2.1.5.2.1).Value
 	$printbw = (Invoke-SnmpGet -IpAddress $IP -Oid 1.3.6.1.4.1.18334.1.1.1.5.7.2.2.1.5.1.2).Value
 	$copybw = (Invoke-SnmpGet -IpAddress $IP -Oid 1.3.6.1.4.1.18334.1.1.1.5.7.2.2.1.5.1.1).Value
-	$printername = (Invoke-SnmpGet -IpAddress $IP -Oid .1.3.6.1.2.1.1.3.0).Value
 	$Uptime = (Invoke-SnmpGet -IpAddress $IP -Oid .1.3.6.1.2.1.1.3.0).Value
 	$BlackToner = (Invoke-SnmpGet -IpAddress $IP -Oid .1.3.6.1.2.1.43.11.1.1.9.1.4).Value +'%'
 	$CyanToner = (Invoke-SnmpGet -IpAddress $IP -Oid .1.3.6.1.2.1.43.11.1.1.9.1.1).Value +'%'
@@ -38,8 +37,6 @@ Function printer-info {
 	$CyanDrum = (Invoke-SnmpGet -IpAddress $IP -Oid .1.3.6.1.2.1.43.11.1.1.9.1.5).Value +'%'
 	$MagentaDrum = (Invoke-SnmpGet -IpAddress $IP -Oid .1.3.6.1.2.1.43.11.1.1.9.1.7).Value +'%'
 	$YellowDrum = (Invoke-SnmpGet -IpAddress $IP -Oid .1.3.6.1.2.1.43.11.1.1.9.1.9).Value +'%'
-
-	
 
 	Write-Host ""
 	Write-host "------ General ------" -ForegroundColor Green
