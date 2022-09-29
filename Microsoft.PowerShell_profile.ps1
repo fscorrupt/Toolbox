@@ -99,6 +99,7 @@
 		$Output = Import-PSSession -Session $ExchangeSession -AllowClobber -DisableNameChecking
 	}
 	function cloud-exc {
+		$Exchange = (Get-ADExchangeServer | where ServerRoles -contains 'CAS')[1].DnsHostName
 		$module = "ExchangeOnlineManagement"
 		Import-Module $module -ErrorVariable ModuleImportError -ErrorAction SilentlyContinue
 		if ($ModuleImportError){
