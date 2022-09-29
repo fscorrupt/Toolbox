@@ -127,7 +127,12 @@
 	function OSInfo {
 		$info = Get-ComputerInfo
 		$Disk = (Get-Disk | where IsSystem -eq $true).AllocatedSize
-
+		$Bitlocker = (New-Object -ComObject Shell.Application).NameSpace('C:').Self.ExtendedProperty('System.Volume.BitLockerProtection')
+		$Bitlocker = switch ($Bitlocker){
+				'0' {'Unencryptable'}
+				'1' {'Encrypted'}
+				'2' {'Not Encrypted'}
+			}
 		$OS = if($info.WindowsVersion){"$($info.OsName) $($info.OsArchitecture) | $($info.OsVersion) - $($info.WindowsVersion)"}Else{"$($info.OsName) $($info.OsArchitecture) | $($info.OsVersion)"}
 		$Model = if($info.CsManufacturer -eq 'LENOVO'){$info.CsSystemFamilyCsModel}Else {$info.CsModel}
 		$Processor = "$($info.CsProcessors.Name) | $($info.CsNumberOfLogicalProcessors) Logical Cores"
@@ -141,7 +146,7 @@
 		$Biosversion = $info.BiosSMBIOSBIOSVersion
 		$BiosFirmType = $info.BiosFirmwareType
 		$BootUptime = "$($info.OsLastBootUpTime.day).$($info.OsLastBootUpTime.month).$($info.OsLastBootUpTime.year) $($info.OsLastBootUpTime.hour):$($info.OsLastBootUpTime.Minute):$($info.OsLastBootUpTime.Second)"
-		$Uptime = "Days:$($info.OsUptime.Days) Hours:$($info.OsUptime.Hours) Minutes:$($info.OsUptime.Minutes) Seconds:$($info.OsUptime.Seconds)"
+		$Uptime = "Days: $($info.OsUptime.Days) Hours: $($info.OsUptime.Hours) Minutes: $($info.OsUptime.Minutes) Seconds: $($info.OsUptime.Seconds)"
 		$Plattform = $info.PowerPlatformRole
 		$HyperV = $info.HyperVisorPresent
 		$Locale = $info.OsLocale
@@ -166,6 +171,8 @@
 		Write-Host "$HyperV"
 		Write-Host "Locale:         " -ForegroundColor Yellow -NoNewline
 		Write-Host "$Locale"
+		Write-Host "Bitlocker:      " -ForegroundColor Yellow -NoNewline
+		Write-Host "$Bitlocker"
 		Write-Host ""
 		Write-Host "############### HW Specific" -ForegroundColor cyan
 		Write-Host "Model:          " -ForegroundColor Yellow -NoNewline
