@@ -124,8 +124,66 @@
 		}
 		Connect-MicrosoftTeams
 	}
-	function uptime {
-		Get-WmiObject win32_operatingsystem | select csname, @{LABEL='LastBootUpTime';EXPRESSION={$_.ConverttoDateTime($_.lastbootuptime)}}
+	function OSInfo {
+		$info = Get-ComputerInfo
+		$Disk = (Get-Disk | where IsSystem -eq $true).AllocatedSize
+
+		$OS = if($info.WindowsVersion){"$($info.OsName) $($info.OsArchitecture) | $($info.OsVersion) - $($info.WindowsVersion)"}Else{"$($info.OsName) $($info.OsArchitecture) | $($info.OsVersion)"}
+		$Model = if($info.CsManufacturer -eq 'LENOVO'){$info.CsSystemFamilyCsModel}Else {$info.CsModel}
+		$Processor = "$($info.CsProcessors.Name) | $($info.CsNumberOfLogicalProcessors) Logical Cores"
+		$KeyboardLayout = $info.KeyboardLayout
+		$Timezone = $info.TimeZone
+		$Installdate = $info.OsInstallDate
+		$Memory = ($info.CsTotalPhysicalMemory/1GB).ToString(".00") +" GB"
+		$Disksize = ($Disk/1GB).ToString(".00") +" GB"
+		$Domain = $info.CsDomain
+		$serial = $info.BiosSeralNumber
+		$Biosversion = $info.BiosSMBIOSBIOSVersion
+		$BiosFirmType = $info.BiosFirmwareType
+		$BootUptime = "$($info.OsLastBootUpTime.day).$($info.OsLastBootUpTime.month).$($info.OsLastBootUpTime.year) $($info.OsLastBootUpTime.hour):$($info.OsLastBootUpTime.Minute):$($info.OsLastBootUpTime.Second)"
+		$Uptime = "Days:$($info.OsUptime.Days) Hours:$($info.OsUptime.Hours) Minutes:$($info.OsUptime.Minutes) Seconds:$($info.OsUptime.Seconds)"
+		$Plattform = $info.PowerPlatformRole
+		$HyperV = $info.HyperVisorPresent
+		$Locale = $info.OsLocale
+
+		Write-Host ""
+		Write-Host "############### OS Specific" -ForegroundColor cyan
+		Write-Host "OS:             " -ForegroundColor Yellow -NoNewline
+		Write-Host "$OS"
+		Write-Host "KeyboardLayout: " -ForegroundColor Yellow -NoNewline
+		Write-Host "$KeyboardLayout"
+		Write-Host "Timezone:       " -ForegroundColor Yellow -NoNewline
+		Write-Host "$Timezone"
+		Write-Host "Installdate:    " -ForegroundColor Yellow -NoNewline
+		Write-Host "$Installdate"
+		Write-Host "BootUptime:     " -ForegroundColor Yellow -NoNewline
+		Write-Host "$BootUptime"
+		Write-Host "Uptime:         " -ForegroundColor Yellow -NoNewline
+		Write-Host "$Uptime"
+		Write-Host "Domain:         " -ForegroundColor Yellow -NoNewline
+		Write-Host "$Domain"
+		Write-Host "HyperV-Role:    " -ForegroundColor Yellow -NoNewline
+		Write-Host "$HyperV"
+		Write-Host "Locale:         " -ForegroundColor Yellow -NoNewline
+		Write-Host "$Locale"
+		Write-Host ""
+		Write-Host "############### HW Specific" -ForegroundColor cyan
+		Write-Host "Model:          " -ForegroundColor Yellow -NoNewline
+		Write-Host "$Model"
+		Write-Host "Processor:      " -ForegroundColor Yellow -NoNewline
+		Write-Host "$Processor"
+		Write-Host "Memory:         " -ForegroundColor Yellow -NoNewline
+		Write-Host "$Memory"
+		Write-Host "System Disk:    " -ForegroundColor Yellow -NoNewline
+		Write-Host "$Disksize"
+		Write-Host "serial:         " -ForegroundColor Yellow -NoNewline
+		Write-Host "$serial"
+		Write-Host "Biosversion:    " -ForegroundColor Yellow -NoNewline
+		Write-Host "$Biosversion"
+		Write-Host "BiosFirmType:   " -ForegroundColor Yellow -NoNewline
+		Write-Host "$BiosFirmType"
+		Write-Host "Plattform:      " -ForegroundColor Yellow -NoNewline
+		Write-Host "$Plattform"
 	}
 	Function pass {
 		-join(48..57+65..90+97..122|ForEach-Object{[char]$_}|Get-Random -C 20) | Set-Clipboard
@@ -334,7 +392,7 @@
 	}
 	Function loaded {
 		Write-Host 'Loaded Functions:' -ForegroundColor cyan
-		Write-Host 'onprem-exc | cloud-exc | uptime | pass | sid2sam | printpanel | printinfo | msol | graph | azuread | teams | getdevice' -ForegroundColor Yellow
+		Write-Host 'onprem-exc | cloud-exc | OSInfo | pass | sid2sam | printpanel | printinfo | msol | graph | azuread | teams | getdevice' -ForegroundColor Yellow
 		write-host ''
 	}
 	# Run Loaded
