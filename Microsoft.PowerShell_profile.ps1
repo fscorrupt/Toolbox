@@ -143,6 +143,7 @@
 		$Memory = ($info.CsTotalPhysicalMemory/1GB).ToString(".00") +" GB"
 		$Disksize = ($Disk/1GB).ToString(".00") +" GB"
 		$Domain = $info.CsDomain
+		$ComputerName = $info.CsDNSHostName
 		$serial = $info.BiosSeralNumber
 		$Biosversion = $info.BiosSMBIOSBIOSVersion
 		$BiosFirmType = $info.BiosFirmwareType
@@ -156,6 +157,8 @@
 		Write-Host "############### OS Specific" -ForegroundColor cyan
 		Write-Host "OS:             " -ForegroundColor Yellow -NoNewline
 		Write-Host "$OS"
+		Write-Host "Computername:   " -ForegroundColor Yellow -NoNewline
+		Write-Host "$ComputerName"
 		Write-Host "KeyboardLayout: " -ForegroundColor Yellow -NoNewline
 		Write-Host "$KeyboardLayout"
 		Write-Host "Timezone:       " -ForegroundColor Yellow -NoNewline
