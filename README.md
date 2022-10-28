@@ -1,4 +1,4 @@
-# Misc-Powershell-Scripts
+# Misc-Scripts
 
 Just bunch of scripts i created, feel free to use them!
 
