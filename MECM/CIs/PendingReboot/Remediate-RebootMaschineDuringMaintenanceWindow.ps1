@@ -1,14 +1,28 @@
 function InitiateReboot{
 	$restartcomputer = Restart-Computer -Force -Confirm:$false
 }
+function LoggedonUsers {
+	$computer = $env:COMPUTERNAME
+	$Users = query.exe user /server:$computer 2>&1
+	
+	if ($Error){
+		$UserConnected = $false
+	}
+	Else {
+		$UserConnected = $true
+	}
+	Return $UserConnected
+}
 function EvaluateUpdateStates{
-  # https://learn.microsoft.com/en-us/mem/configmgr/develop/reference/core/clients/sdk/ccm_softwareupdate-client-wmi-class
-  # Check if Updates are Currently installing or Downloading, to determinate if we can reboot or not.
-  
-	$CantReboot = '11','7','6','5','4','2'
+	# Check if Updates are Currently installing or Downloading, to determinate if we can reboot or not.
+	$CantReboot = '11','7','6','5','4','2' # https://learn.microsoft.com/en-us/mem/configmgr/develop/reference/core/clients/sdk/ccm_softwareupdate-client-wmi-class
 	$GettingUpdatesStates =(Get-WmiObject -Query 'SELECT * FROM CCM_SoftwareUpdate' -namespace 'ROOT\ccm\ClientSDK' | where {$_.EvaluationState -in $CantReboot}).EvaluationState
-
-	if (!$GettingUpdatesStates){
+	
+	# Check if Users are Connected
+	$UsersConnected = LoggedonUsers
+	
+	# Initiate Reboot, when there is no users connected and no update installation in progress.
+	if (!$GettingUpdatesStates -and !$UsersConnected){
 		InitiateReboot
 	}
 }
