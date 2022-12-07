@@ -8,4 +8,4 @@ If a reboot is pending, the machine is uncompliant and the remediation script st
 The remidiation script will check if the machine is currently in maintenance.
 If the machine is in maintenance, it will check if there are currently updates installing and if a user is logged on.
 
-If both are false, the script will trigger a reboot.
+If both are false and server is in maintenance, the script will trigger a reboot.
