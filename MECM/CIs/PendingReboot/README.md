@@ -1,4 +1,4 @@
-# Check and Remidiate Machines that havea pending reboot.
+# Check and Remidiate Machines that have a pending reboot.
 
 ## Exported Configuration Item + Scripts Used in that CI.
 
