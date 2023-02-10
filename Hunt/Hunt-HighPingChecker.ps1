@@ -8,15 +8,10 @@ $id = (Get-Process HuntGame -ErrorAction SilentlyContinue).id
 
 if ($id) {
     Write-Host "Found 'HuntGame.exe' with PID: $id" -ForegroundColor Green
-    Write-Host "Running netstat and select the ip connected to port:'61068' or '61088' or '61089'" -ForegroundColor Cyan
+    Write-Host "Running netstat and select the ip connected to port:'61088'" -ForegroundColor Cyan
     $netstatdata = netstat -ano 
     $Selectpid = $netstatdata | Select-String -Pattern $id 
-    $IP61068 = $Selectpid | Select-String -Pattern ":61068" 
-    $IP61088 = $Selectpid | Select-String -Pattern ":61088"
-    $IP61089 = $Selectpid | Select-String -Pattern ":61089"
-    if ($IP61068) { $IP = $IP61068 }
-    if ($IP61088) { $IP = $IP61088 }
-    if ($IP61089) { $IP = $IP61089 }
+    $IP = $Selectpid | Select-String -Pattern ":61088"
     if ($IP) {
         $ip = $ip.line.replace(' ', '|').Replace('|||||', '|').Replace('||||', '|').Replace('||TCP', '').split('|')[2].Split(':')[0]
 
@@ -69,7 +64,7 @@ if ($id) {
         }
     }
     Else {
-        Write-Host "Could not find IP with Port: '61068' or '61088' or '61089'" -ForegroundColor Red
+        Write-Host "Could not find IP with Port: '61088'" -ForegroundColor Red
     }
 }
 Else {
