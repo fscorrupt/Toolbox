@@ -18,10 +18,10 @@ if ($id) {
         Write-Host "Start tracert for IP: '$ip'" -ForegroundColor Cyan
         $routes = (Test-NetConnection $ip -TraceRoute).TraceRoute
 
-        Write-Host "Starting download of WhoIs.zip (Sysinternal Tool)..." -ForegroundColor Cyan
-        # Download WhoIs
         # Test if file is already present
         if (!(Test-Path $whoispath)) {
+            Write-Host "Starting download of WhoIs.zip (Sysinternal Tool)..." -ForegroundColor Cyan
+            # Download WhoIs
             Invoke-WebRequest $whoisDownload -Method Get -OutFile "C:\temp\whois.zip"
             if (Test-Path "C:\temp\whois.zip") {
                 Write-Host "Successfully downloaded whois.zip" -ForegroundColor Green
