@@ -17,7 +17,7 @@ if ($id) {
     if ($IP61068) { $IP = $IP61068 }
     if ($IP61088) { $IP = $IP61088 }
     if ($IP61089) { $IP = $IP61089 }
-    if (!$IP) {
+    if ($IP) {
         $ip = $ip.line.replace(' ', '|').Replace('|||||', '|').Replace('||||', '|').Replace('||TCP', '').split('|')[2].Split(':')[0]
 
         Write-Host "Start tracert for IP: '$ip'" -ForegroundColor Cyan
@@ -68,7 +68,9 @@ if ($id) {
             }
         }
     }
-    Write-Host "Could not find IP with Port: '61068' or '61088' or '61089'" -ForegroundColor Red
+    Else {
+        Write-Host "Could not find IP with Port: '61068' or '61088' or '61089'" -ForegroundColor Red
+    }
 }
 Else {
     Write-Host "Please start hunt and load into a game before you run this script..." -ForegroundColor Red
