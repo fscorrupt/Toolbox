@@ -1,3 +1,4 @@
+$ProgressPreference = 'SilentlyContinue'
 $whoisDownload = "https://download.sysinternals.com/files/WhoIs.zip"
 $whoispath = "C:\temp\whois\whois64.exe"
 
@@ -7,56 +8,67 @@ $id = (Get-Process HuntGame -ErrorAction SilentlyContinue).id
 
 if ($id) {
     Write-Host "Found 'HuntGame.exe' with PID: $id" -ForegroundColor Green
-    Write-Host "Running netstat and select the ip connected to port:'61068'" -ForegroundColor Cyan
+    Write-Host "Running netstat and select the ip connected to port:'61068' or '61088' or '61089'" -ForegroundColor Cyan
     $netstatdata = netstat -ano 
-    $IP = $netstatdata | Select-String -Pattern ":61068" 
-    $ip = $ip.line.replace(' ', '|').Replace('|||||', '|').Replace('||||', '|').Replace('||TCP', '').split('|')[2].Split(':')[0]
+    $Selectpid = $netstatdata | Select-String -Pattern $id 
+    $IP61068 = $Selectpid | Select-String -Pattern ":61068" 
+    $IP61088 = $Selectpid | Select-String -Pattern ":61088"
+    $IP61089 = $Selectpid | Select-String -Pattern ":61089"
+    if ($IP61068) { $IP = $IP61068 }
+    if ($IP61088) { $IP = $IP61088 }
+    if ($IP61089) { $IP = $IP61089 }
+    if (!$IP) {
+        $ip = $ip.line.replace(' ', '|').Replace('|||||', '|').Replace('||||', '|').Replace('||TCP', '').split('|')[2].Split(':')[0]
 
-    Write-Host "Start tracert for IP: '$ip'" -ForegroundColor Cyan
-    $routes = (Test-NetConnection $ip -TraceRoute).TraceRoute
+        Write-Host "Start tracert for IP: '$ip'" -ForegroundColor Cyan
+        $routes = (Test-NetConnection $ip -TraceRoute).TraceRoute
 
-    Write-Host "Starting download of WhoIs.zip (Sysinternal Tool)..." -ForegroundColor Cyan
-    # Download WhoIs
-    # Test if file is already present
-    if (!(Test-Path $whoispath)) {
-        Invoke-WebRequest $whoisDownload -Method Get -OutFile "C:\temp\whois.zip"
-        if (Test-Path "C:\temp\whois.zip") {
-            Write-Host "Successfully downloaded whois.zip" -ForegroundColor Green
-            Write-Host "Extracting zip here: 'C:\temp\whois'" -ForegroundColor Cyan
-            # Unzip WhoIs
-            Expand-Archive "C:\temp\whois.zip" "C:\temp\whois"
-            if (Test-Path $whoispath) {
-                Write-Host "Successfully extracted whois.zip" -ForegroundColor Green
+        Write-Host "Starting download of WhoIs.zip (Sysinternal Tool)..." -ForegroundColor Cyan
+        # Download WhoIs
+        # Test if file is already present
+        if (!(Test-Path $whoispath)) {
+            Invoke-WebRequest $whoisDownload -Method Get -OutFile "C:\temp\whois.zip"
+            if (Test-Path "C:\temp\whois.zip") {
+                Write-Host "Successfully downloaded whois.zip" -ForegroundColor Green
+                Write-Host "Extracting zip here: 'C:\temp\whois'" -ForegroundColor Cyan
+                # Unzip WhoIs
+                Expand-Archive "C:\temp\whois.zip" "C:\temp\whois"
+                if (Test-Path $whoispath) {
+                    Write-Host "Successfully extracted whois.zip" -ForegroundColor Green
+                }
+                Else {
+                    Write-Host "Error during extraction, exiting script now..." -ForegroundColor Red
+                    exit
+                }
             }
             Else {
-                Write-Host "Error during extraction, exiting script now..." -ForegroundColor Red
+                Write-Host "Error while downloading, exiting script now..." -ForegroundColor Red
                 exit
             }
         }
-        Else {
-            Write-Host "Error while downloading, exiting script now..." -ForegroundColor Red
-            exit
-        }
-    }
-
-    foreach ($route in $routes) {
+    
         Write-Host "Starting Ping measurement..." -ForegroundColor Cyan
-        $test = Test-Connection $route -Count 6 -BufferSize 1024 | select Address, ResponseTime
-        $AveragePing = ($test.ResponseTime | Measure-Object -Average).Average
-        if ($AveragePing -gt '100') {
-            Write-Host ""
-            Write-Host "#######################################################"
-            Write-Host "IP: '$route' has an Average ping from: '$($AveragePing)'" -ForegroundColor Yellow
-            Write-Host "Getting WhoIs information for IP: '$route'" -ForegroundColor Cyan
-            Write-Host ""
-            $GetWhoIs = (& $whoispath /accepteula -v $route -nobanner | Select-String -Pattern 'Domain Name:')[0].ToString()
-            $DomainName = $GetWhoIs.Split(':').Replace(' ', '')[1].ToLower()
-            Write-Host "Domain Name of '$route' is: $domainname" -ForegroundColor Yellow
-        }
-        Else {
-            Write-Host "Ping is below 100ms for IP: '$route', no further action needed." -ForegroundColor Green
+        foreach ($route in $routes) {
+            if ($route -ne '0.0.0.0') {
+                $test = Test-Connection $route -Count 6 -BufferSize 1024  | select Address, ResponseTime
+                $AveragePing = ($test.ResponseTime | Measure-Object -Average).Average
+                if ($AveragePing -gt '100') {
+                    Write-Host ""
+                    Write-Host "#######################################################"
+                    Write-Host "IP: '$route' has an Average ping from: '$($AveragePing)'" -ForegroundColor Yellow
+                    Write-Host "Getting WhoIs information for IP: '$route'" -ForegroundColor Cyan
+                    Write-Host ""
+                    $GetWhoIs = (& $whoispath /accepteula -v $route -nobanner | Select-String -Pattern 'Domain Name:')[0].ToString()
+                    $DomainName = $GetWhoIs.Split(':').Replace(' ', '')[1].ToLower()
+                    Write-Host "Domain Name of '$route' is: $domainname" -ForegroundColor Yellow
+                }
+                Else {
+                    Write-Host "Ping is below 100ms for IP: '$route', no further action needed." -ForegroundColor Green
+                }
+            }
         }
     }
+    Write-Host "Could not find IP with Port: '61068' or '61088' or '61089'" -ForegroundColor Red
 }
 Else {
     Write-Host "Please start hunt and load into a game before you run this script..." -ForegroundColor Red
