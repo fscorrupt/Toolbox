@@ -17,23 +17,26 @@ if ($id) {
 
     Write-Host "Starting download of WhoIs.zip (Sysinternal Tool)..." -ForegroundColor Cyan
     # Download WhoIs
-    Invoke-WebRequest $whoisDownload -Method Get -OutFile "C:\temp\whois.zip"
-    if(Test-Path "C:\temp\whois.zip"){
-        Write-Host "Successfully downloaded whois.zip" -ForegroundColor Green
-        Write-Host "Extracting zip here: 'C:\temp\whois'" -ForegroundColor Cyan
-        # Unzip WhoIs
-        Expand-Archive "C:\temp\whois.zip" "C:\temp\whois"
-        if(Test-Path $whoispath){
-            Write-Host "Successfully extracted whois.zip" -ForegroundColor Green
+    # Test if file is already present
+    if (!(Test-Path $whoispath)) {
+        Invoke-WebRequest $whoisDownload -Method Get -OutFile "C:\temp\whois.zip"
+        if (Test-Path "C:\temp\whois.zip") {
+            Write-Host "Successfully downloaded whois.zip" -ForegroundColor Green
+            Write-Host "Extracting zip here: 'C:\temp\whois'" -ForegroundColor Cyan
+            # Unzip WhoIs
+            Expand-Archive "C:\temp\whois.zip" "C:\temp\whois"
+            if (Test-Path $whoispath) {
+                Write-Host "Successfully extracted whois.zip" -ForegroundColor Green
+            }
+            Else {
+                Write-Host "Error during extraction, exiting script now..." -ForegroundColor Red
+                exit
+            }
         }
-        Else{
-            Write-Host "Error during extraction, exiting script now..." -ForegroundColor Red
+        Else {
+            Write-Host "Error while downloading, exiting script now..." -ForegroundColor Red
             exit
         }
-    }
-    Else {
-        Write-Host "Error while downloading, exiting script now..." -ForegroundColor Red
-        exit
     }
 
     foreach ($route in $routes) {
