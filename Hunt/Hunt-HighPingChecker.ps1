@@ -20,11 +20,11 @@ if ($id) {
         $Temp = $ip.line.replace(' ', '|').Replace('|||||', '|').Replace('||||', '|').Replace('||TCP', '').split('|')[2].Split(':')
         $ip = $Temp[0]
         $Port = $Temp[1]
-        Write-Host "Found IP: " -NoNewline -ForegroundColor Cyan
+        Write-Host "    Found IP: " -NoNewline -ForegroundColor Yellow  
         Write-Host "$ip " -NoNewline  -ForegroundColor Green
-        Write-Host "with Port: " -NoNewline -ForegroundColor Cyan
+        Write-Host "with Port: " -NoNewline -ForegroundColor Yellow
         Write-Host "$Port" -NoNewline -ForegroundColor Green
-        Write-Host ", via netstat" -ForegroundColor Cyan
+        Write-Host ", via netstat" -ForegroundColor Yellow
         Write-Host "Starting tracert now..."-ForegroundColor Cyan
 
         $routes = (Test-NetConnection $ip -TraceRoute).TraceRoute
