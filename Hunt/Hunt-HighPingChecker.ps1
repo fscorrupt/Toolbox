@@ -48,6 +48,7 @@ if ($id) {
             if ($route -ne '0.0.0.0') {
                 $test = Test-Connection $route -Count 6 -BufferSize 1024  | select Address, ResponseTime
                 $AveragePing = ($test.ResponseTime | Measure-Object -Average).Average
+                $AveragePing = [MATH]::Round($AveragePing,2)
                 if ($AveragePing -gt '100') {
                     Write-Host ""
                     Write-Host "#######################################################"
