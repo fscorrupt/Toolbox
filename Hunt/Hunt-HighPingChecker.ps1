@@ -28,6 +28,7 @@ if ($id) {
         Write-Host "Starting tracert now..."-ForegroundColor Cyan
 
         $routes = (Test-NetConnection $ip -TraceRoute).TraceRoute
+        Write-Host "    Tracert finished..."-ForegroundColor Yellow
 
         # Test if file is already present
         if (!(Test-Path $whoispath)) {
@@ -63,9 +64,9 @@ if ($id) {
                 if ($AveragePing -gt '100') {
                     Write-Host ""
                     Write-Host "#######################################################"
-                    Write-Host "IP: " -NoNewline
-                    Write-Host "$route" -NoNewline -ForegroundColor Cyan
-                    Write-Host " has an average ping of: " -NoNewline
+                    Write-Host "IP: " -NoNewline -ForegroundColor Cyan
+                    Write-Host "$route" -NoNewline -ForegroundColor Green
+                    Write-Host " has an average ping of: " -NoNewline -ForegroundColor Cyan
                     Write-Host "$($AveragePing)ms"-ForegroundColor red
                     Write-Host "Getting WhoIs information for IP: " -NoNewline -ForegroundColor Cyan
                     Write-Host "$route" -ForegroundColor Green
