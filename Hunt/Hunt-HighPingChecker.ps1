@@ -17,10 +17,16 @@ if ($id) {
     $Selectpid = $netstatdata | Select-String -Pattern $id 
     $IP = $Selectpid | Select-String -Pattern ":610"
     if ($IP) {
-        $ip = $ip.line.replace(' ', '|').Replace('|||||', '|').Replace('||||', '|').Replace('||TCP', '').split('|')[2].Split(':')[0]
+        $Temp = $ip.line.replace(' ', '|').Replace('|||||', '|').Replace('||||', '|').Replace('||TCP', '').split('|')[2].Split(':')
+        $ip = $Temp[0]
+        $Port = $Temp[1]
+        Write-Host "Found IP: " -NoNewline -ForegroundColor Cyan
+        Write-Host "$ip " -NoNewline  -ForegroundColor Green
+        Write-Host "with Port: " -NoNewline -ForegroundColor Cyan
+        Write-Host "$Port" -NoNewline -ForegroundColor Green
+        Write-Host ", via netstat" -ForegroundColor Cyan
+        Write-Host "Starting tracert now..."-ForegroundColor Cyan
 
-        Write-Host "Start tracert for IP: " -NoNewline -ForegroundColor Cyan
-        Write-Host "$ip" -ForegroundColor Green
         $routes = (Test-NetConnection $ip -TraceRoute).TraceRoute
 
         # Test if file is already present
