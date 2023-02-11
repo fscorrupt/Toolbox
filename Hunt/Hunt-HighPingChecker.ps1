@@ -30,6 +30,7 @@ if ($id) {
                 Expand-Archive "C:\temp\whois.zip" "C:\temp\whois"
                 if (Test-Path $whoispath) {
                     Write-Host "Successfully extracted whois.zip" -ForegroundColor Green
+                    Remove-Item "C:\temp\whois.zip" -Force -Confirm:$false
                 }
                 Else {
                     Write-Host "Error during extraction, exiting script now..." -ForegroundColor Red
