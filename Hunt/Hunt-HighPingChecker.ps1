@@ -47,20 +47,20 @@ if ($id) {
             Write-Host "Starting download of WhoIs.zip (Sysinternal Tool)..." -ForegroundColor Cyan
             # Download WhoIs
             if (!(Test-Path $whoispath )){New-Item $whoispath -ItemType Directory | Out-Null}
-            Invoke-WebRequest $whoisDownload -Method Get -OutFile "$whoispath.zip"
-            if (Test-Path "$whoispath.zip") {
+            Invoke-WebRequest $whoisDownload -Method Get -OutFile "$whoispath\whois.zip"
+            if (Test-Path "$whoispath\whois.zip") {
                 Write-Host "    Successfully downloaded " -NoNewline -ForegroundColor Green
                 Write-Host "whois.zip" -ForegroundColor Yellow
                 Write-Host "Extracting zip here: " -NoNewline -ForegroundColor Cyan
                 Write-Host "$whoispath" -ForegroundColor Yellow
                 # Unzip WhoIs
-                Expand-Archive "$whoispath.zip" "$whoispath"
-                if (Test-Path $whoispath) {
+                Expand-Archive "$whoispath\whois.zip" "$whoispath"
+                if (Test-Path "$whoispath\whois64.exe") {
                     Write-Host "    Successfully extracted " -NoNewline -ForegroundColor Green
                     Write-Host "whois.zip" -ForegroundColor Yellow
                     Write-Host "Removing zip file now" -ForegroundColor Cyan
                     # Remove Zip File
-                    Remove-Item "$whoispath.zip" -Force -Confirm:$false
+                    Remove-Item "$whoispath\whois.zip" -Force -Confirm:$false
                     Write-Host "    Zip file removed" -ForegroundColor Green
                 }
                 Else {
@@ -94,7 +94,7 @@ if ($id) {
                     Write-Host "$($AveragePing)ms"-ForegroundColor red
                     Write-Host "Getting WhoIs information for IP: " -NoNewline -ForegroundColor Cyan
                     Write-Host "$route" -ForegroundColor Green
-                    $GetWhoIs = (& $whoispath /accepteula -v $route -nobanner | Select-String -Pattern 'Domain Name:')[0].ToString()
+                    $GetWhoIs = (& "$whoispath\whois64.exe" /accepteula -v $route -nobanner | Select-String -Pattern 'Domain Name:')[0].ToString()
                     $DomainName = $GetWhoIs.Split(':').Replace(' ', '')[1].ToLower()
                     Write-Host "    Domain Name of " -NoNewline -ForegroundColor Yellow
                     Write-Host "$route " -NoNewline -ForegroundColor Green
