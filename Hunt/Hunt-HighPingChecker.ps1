@@ -1,21 +1,32 @@
 $ProgressPreference = 'SilentlyContinue'
 $whoisDownload = "https://download.sysinternals.com/files/WhoIs.zip"
-$whoispath = "C:\temp\whois\whois64.exe"
+
+###############################################
+# You can Edit those Lines to fit your needs! #
+###############################################
+$whoispath = "C:\temp\whois"
+$ExeToMonitor = "HuntGame.exe"
+# For Hunt it could be '61068/61088/61089' - thats why im looking for port '610xx'.
+$PortToMonitor = "610"
+$MaxPing = '100'
+########################################################
+# Only Edit below this, if you know what you are doing #
+########################################################
 
 # Getting Hunt Game Exe
-Write-Host "Check for hunt process..." -ForegroundColor Cyan
+Write-Host "Check for $ExeToMonitor process..." -ForegroundColor Cyan
 $id = (Get-Process HuntGame -ErrorAction SilentlyContinue).id
 
 if ($id) {
     Write-Host "    Found " -NoNewline  -ForegroundColor Yellow
-    Write-Host "HuntGame.exe " -NoNewline -ForegroundColor Green
+    Write-Host "$ExeToMonitor " -NoNewline -ForegroundColor Green
     Write-Host "with PID: " -NoNewline  -ForegroundColor Yellow
     Write-Host "$id" -ForegroundColor Green
-    Write-Host "Running netstat and selecting the ip connected to port: " -NoNewline -ForegroundColor Cyan
-    Write-Host "610xx" -ForegroundColor Green
+    Write-Host "Running netstat and selecting the ip connected to port beginning with: " -NoNewline -ForegroundColor Cyan
+    Write-Host "$PortToMonitor" -ForegroundColor Green
     $netstatdata = netstat -ano 
     $Selectpid = $netstatdata | Select-String -Pattern $id 
-    $IP = $Selectpid | Select-String -Pattern ":610"
+    $IP = $Selectpid | Select-String -Pattern ":$PortToMonitor"
     if ($IP) {
         $Temp = $ip.line.replace(' ', '|').Replace('|||||', '|').Replace('||||', '|').Replace('||TCP', '').split('|')[2].Split(':')
         $ip = $Temp[0]
@@ -31,18 +42,25 @@ if ($id) {
         Write-Host "    Tracert finished..."-ForegroundColor Yellow
 
         # Test if file is already present
-        if (!(Test-Path $whoispath)) {
+        if (!(Test-Path $whoispath\whois64.exe)) {
             Write-Host "Starting download of WhoIs.zip (Sysinternal Tool)..." -ForegroundColor Cyan
             # Download WhoIs
-            Invoke-WebRequest $whoisDownload -Method Get -OutFile "C:\temp\whois.zip"
-            if (Test-Path "C:\temp\whois.zip") {
-                Write-Host "    Successfully downloaded whois.zip" -ForegroundColor Green
-                Write-Host "Extracting zip here: 'C:\temp\whois'" -ForegroundColor Cyan
+            if (!(Test-Path $whoispath )){New-Item $whoispath -ItemType Directory | Out-Null}
+            Invoke-WebRequest $whoisDownload -Method Get -OutFile "$whoispath.zip"
+            if (Test-Path "$whoispath.zip") {
+                Write-Host "    Successfully downloaded " -NoNewline -ForegroundColor Green
+                Write-Host "whois.zip" -ForegroundColor Yellow
+                Write-Host "Extracting zip here: " -NoNewline -ForegroundColor Cyan
+                Write-Host "$whoispath" -ForegroundColor Yellow
                 # Unzip WhoIs
-                Expand-Archive "C:\temp\whois.zip" "C:\temp\whois"
+                Expand-Archive "$whoispath.zip" "$whoispath"
                 if (Test-Path $whoispath) {
-                    Write-Host "    Successfully extracted whois.zip" -ForegroundColor Green
-                    Remove-Item "C:\temp\whois.zip" -Force -Confirm:$false
+                    Write-Host "    Successfully extracted " -NoNewline -ForegroundColor Green
+                    Write-Host "whois.zip" -ForegroundColor Yellow
+                    Write-Host "Removing zip file now" -ForegroundColor Cyan
+                    # Remove Zip File
+                    Remove-Item "$whoispath.zip" -Force -Confirm:$false
+                    Write-Host "    Zip file removed" -ForegroundColor Green
                 }
                 Else {
                     Write-Host "    Error during extraction, exiting script now..." -ForegroundColor Red
@@ -61,7 +79,7 @@ if ($id) {
                 $test = Test-Connection $route -Count 6 -BufferSize 1024  | select Address, ResponseTime
                 $AveragePing = ($test.ResponseTime | Measure-Object -Average).Average
                 $AveragePing = [MATH]::Round($AveragePing,2)
-                if ($AveragePing -gt '100') {
+                if ($AveragePing -gt $MaxPing) {
                     Write-Host ""
                     Write-Host "#######################################################"
                     Write-Host "IP: " -NoNewline -ForegroundColor Cyan
@@ -79,9 +97,9 @@ if ($id) {
                 }
                 Else {
                     Write-Host "    Ping is " -NoNewline  -ForegroundColor Yellow
-                    Write-Host "($($AveragePing)ms) " -NoNewline -ForegroundColor Green
+                    Write-Host "($AveragePing`ms) " -NoNewline -ForegroundColor Green
                     Write-Host "and below " -NoNewline  -ForegroundColor Yellow
-                    Write-Host "100ms " -NoNewline -ForegroundColor Green
+                    Write-Host "$MaxPing`ms " -NoNewline -ForegroundColor Green
                     Write-Host "for IP: " -NoNewline  -ForegroundColor Yellow
                     Write-Host "$route" -NoNewline -ForegroundColor Green
                     Write-Host ", no further action needed."  -ForegroundColor Yellow
@@ -91,9 +109,11 @@ if ($id) {
     }
     Else {
         Write-Host "    Could not find IP with Port: " -NoNewline -ForegroundColor Red
-        Write-Host "61088" -ForegroundColor Yellow
+        Write-Host "$Port" -ForegroundColor Yellow
     }
 }
 Else {
-    Write-Host "    Please start hunt and load into a game before you run this script..." -ForegroundColor Red
+    Write-Host "    Please start $ExeToMonitor before you run this script..." -ForegroundColor Red
 }
+
+pause
