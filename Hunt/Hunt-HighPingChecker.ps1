@@ -77,14 +77,27 @@ if ($id) {
         Write-Host "Starting Ping measurement..." -ForegroundColor Cyan
         foreach ($route in $routes) {
             if ($route -ne '0.0.0.0') {
-                if ($Buffer){
-                    $test = Test-Connection $route -Count 6 -BufferSize '1024'  | select Address, ResponseTime
+                try {
+                    $test = (Test-Connection $route -Count 6 -BufferSize '1024' -ErrorAction SilentlyContinue).ResponseTime
+                }
+                catch {
+                    Write-Host "Error occured using " -NoNewline -ForegroundColor Red
+                    Write-Host "Test-Connection" -NoNewline -ForegroundColor Yellow
+                    Write-Host "using " -NoNewline -ForegroundColor Red
+                    Write-Host "Test-NetConnection " -NoNewline -ForegroundColor Yellow
+                    Write-Host "instead." -ForegroundColor Red
+                }
+                if ($Error){
+                    $test = (Test-NetConnection $route -Hops 6 -ErrorAction SilentlyContinue).PingReplyDetails.RoundtripTime
+                }
+                if ($test.count -eq '1'){
+                    $AveragePing = $test
                 }
                 Else {
-                    $test = Test-Connection $route -Count 6 | select Address, ResponseTime
+                    $AveragePing = ($test | Measure-Object -Average).Average
+                    $AveragePing = [MATH]::Round($AveragePing,2)
                 }
-                $AveragePing = ($test.ResponseTime | Measure-Object -Average).Average
-                $AveragePing = [MATH]::Round($AveragePing,2)
+                
                 if ($AveragePing -gt $MaxPing) {
                     Write-Host ""
                     Write-Host "#######################################################"
