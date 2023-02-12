@@ -9,6 +9,7 @@ $ExeToMonitor = "HuntGame.exe"
 # For Hunt it could be '61068/61088/61089' - thats why im looking for port '610xx'.
 $PortToMonitor = "610"
 $MaxPing = '100'
+$Buffersize = '1024'
 ########################################################
 # Only Edit below this, if you know what you are doing #
 ########################################################
@@ -76,7 +77,7 @@ if ($id) {
         Write-Host "Starting Ping measurement..." -ForegroundColor Cyan
         foreach ($route in $routes) {
             if ($route -ne '0.0.0.0') {
-                $test = Test-Connection $route -Count 6 -BufferSize 1024  | select Address, ResponseTime
+                $test = Test-Connection $route -Count 6 -BufferSize $Buffersize  | select Address, ResponseTime
                 $AveragePing = ($test.ResponseTime | Measure-Object -Average).Average
                 $AveragePing = [MATH]::Round($AveragePing,2)
                 if ($AveragePing -gt $MaxPing) {
