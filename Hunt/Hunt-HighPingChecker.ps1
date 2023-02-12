@@ -13,9 +13,9 @@ $MaxPing = '100'
 # Only Edit below this, if you know what you are doing #
 ########################################################
 
-# Getting Hunt Game Exe
+# Getting Exe
 Write-Host "Check for $ExeToMonitor process..." -ForegroundColor Cyan
-$id = (Get-Process HuntGame -ErrorAction SilentlyContinue).id
+$id = (Get-Process $ExeToMonitor.split('.')[0] -ErrorAction SilentlyContinue).id
 
 if ($id) {
     Write-Host "    Found " -NoNewline  -ForegroundColor Yellow
