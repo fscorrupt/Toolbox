@@ -9,6 +9,7 @@ $ExeToMonitor = "HuntGame.exe"
 # For Hunt it could be '61068/61088/61089' - thats why im looking for port '610xx'.
 $PortToMonitor = "610"
 $MaxPing = '100'
+$PublicIp = Invoke-RestMethod http://ipinfo.io/json
 ########################################################
 # Only Edit below this, if you know what you are doing #
 ########################################################
@@ -36,6 +37,12 @@ if ($id) {
         Write-Host "with Port: " -NoNewline -ForegroundColor Yellow
         Write-Host "$Port" -NoNewline -ForegroundColor Green
         Write-Host ", via netstat" -ForegroundColor Yellow
+        Write-Host "########################################################"
+        Write-Host "Your External IP is: " -NoNewline -ForegroundColor Cyan
+        Write-Host "$($PublicIp.ip)" -ForegroundColor Yellow
+        Write-Host "Your ISP is: " -NoNewline -ForegroundColor Cyan
+        Write-Host "$($PublicIp.org)" -ForegroundColor Yellow
+        Write-Host "########################################################"   
         Write-Host "Starting tracert now..."-ForegroundColor Cyan
 
         $routes = (Test-NetConnection $ip -TraceRoute).TraceRoute
@@ -72,7 +79,6 @@ if ($id) {
                 exit
             }
         }
-    
         Write-Host "Starting Ping measurement..." -ForegroundColor Cyan
         foreach ($route in $routes) {
             if ($route -ne '0.0.0.0') {
@@ -87,7 +93,8 @@ if ($id) {
                     Write-Host "instead." -ForegroundColor Red
                 }
                 if ($Error){
-                    $test = (Test-NetConnection $route -Hops 6 -ErrorAction SilentlyContinue).PingReplyDetails.RoundtripTime
+                    $test = (Test-NetConnection $route -Hops 6 -ErrorAction SilentlyContinue -WarningAction SilentlyContinue).PingReplyDetails.RoundtripTime
+                    $resolveDNSName = (Resolve-DNSName $route).NameHost
                 }
                 if ($test.count -eq '1'){
                     $AveragePing = $test
@@ -95,32 +102,46 @@ if ($id) {
                 Else {
                     $AveragePing = ($test | Measure-Object -Average).Average
                     $AveragePing = [MATH]::Round($AveragePing,2)
+                    $resolveDNSName = (Resolve-DNSName $route).NameHost
                 }
                 
                 if ($AveragePing -gt $MaxPing) {
                     Write-Host ""
-                    Write-Host "#######################################################"
-                    Write-Host "IP: " -NoNewline -ForegroundColor Cyan
+                    Write-Host "    #######################################################"
+                    Write-Host "    IP: " -NoNewline -ForegroundColor Cyan
                     Write-Host "$route" -NoNewline -ForegroundColor Green
                     Write-Host " has an average ping of: " -NoNewline -ForegroundColor Cyan
                     Write-Host "$($AveragePing)ms"-ForegroundColor red
-                    Write-Host "Getting WhoIs information for IP: " -NoNewline -ForegroundColor Cyan
+                    Write-Host "    Getting WhoIs information for IP: " -NoNewline -ForegroundColor Cyan
                     Write-Host "$route" -ForegroundColor Green
                     $GetWhoIs = (& "$whoispath\whois64.exe" /accepteula -v $route -nobanner | Select-String -Pattern 'Domain Name:')[0].ToString()
                     $DomainName = $GetWhoIs.Split(':').Replace(' ', '')[1].ToLower()
-                    Write-Host "    Domain Name of " -NoNewline -ForegroundColor Yellow
+                    Write-Host "        Domain Name of " -NoNewline -ForegroundColor Yellow
                     Write-Host "$route " -NoNewline -ForegroundColor Green
                     Write-Host "is: " -NoNewline -ForegroundColor Yellow
                     Write-Host "$domainname" -ForegroundColor Green
                 }
                 Else {
-                    Write-Host "    Ping is " -NoNewline  -ForegroundColor Yellow
+                    Write-Host "    Ping is " -NoNewline -ForegroundColor Cyan
                     Write-Host "($AveragePing`ms) " -NoNewline -ForegroundColor Green
-                    Write-Host "and below " -NoNewline  -ForegroundColor Yellow
+                    Write-Host "and below " -NoNewline -ForegroundColor Cyan
                     Write-Host "$MaxPing`ms " -NoNewline -ForegroundColor Green
-                    Write-Host "for IP: " -NoNewline  -ForegroundColor Yellow
+                    Write-Host "for IP: " -NoNewline -ForegroundColor Cyan
                     Write-Host "$route" -NoNewline -ForegroundColor Green
-                    Write-Host ", no further action needed."  -ForegroundColor Yellow
+                    Write-Host ", no further action needed." -ForegroundColor Cyan
+                    if ($resolveDNSName.count -eq 1){
+                        Write-Host "        DNS Name is: " -NoNewline -ForegroundColor Yellow
+                        Write-Host "$resolveDNSName"-ForegroundColor Green
+                    }
+                    if ($resolveDNSName.count -gt 1){
+                        Write-Host "        Found multible DNS Names for IP: " -NoNewline -ForegroundColor Cyan
+                        Write-Host "$route" -ForegroundColor Green
+                        Write-Host "            DNS Names are:" -ForegroundColor Yellow
+                        Foreach ($dnsname in $resolveDNSName){
+                            Write-Host "            $resolveDNSName"-ForegroundColor Green
+                        }
+                    }
+                    Write-Host ""
                 }
             }
         }
