@@ -28,10 +28,18 @@ if ($id) {
     $netstatdata = netstat -ano 
     $Selectpid = $netstatdata | Select-String -Pattern $id 
     $IP = $Selectpid | Select-String -Pattern ":$PortToMonitor"
+    $IPv6 = $IP | Select-String -NotMatch -Pattern "\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
     if ($IP) {
-        $Temp = $ip.line.replace(' ', '|').Replace('|||||', '|').Replace('||||', '|').Replace('||TCP', '').split('|')[2].Split(':')
-        $ip = $Temp[0]
-        $Port = $Temp[1]
+        if ($IPv6) {
+            $Temp = $IPv6.line.replace('[','').replace(' ', '|').Replace('|||||', '|').Replace('||||', '|').Replace('||TCP', '').split('|')[1].Split(']')
+            $ip = $Temp[0]
+            $Port = $Temp[1].Replace(':','')
+        }
+        Else {
+            $Temp = $ip.line.replace(' ', '|').Replace('|||||', '|').Replace('||||', '|').Replace('||TCP', '').split('|')[2].Split(':')
+            $ip = $Temp[0]
+            $Port = $Temp[1]
+        }
         Write-Host "    Found IP: " -NoNewline -ForegroundColor Yellow  
         Write-Host "$ip " -NoNewline  -ForegroundColor Green
         Write-Host "with Port: " -NoNewline -ForegroundColor Yellow
