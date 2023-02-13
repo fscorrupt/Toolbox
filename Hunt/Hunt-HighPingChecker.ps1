@@ -9,7 +9,6 @@ $ExeToMonitor = "HuntGame.exe"
 # For Hunt it could be '61068/61088/61089' - thats why im looking for port '610xx'.
 $PortToMonitor = "610"
 $MaxPing = '100'
-$Buffer = $true
 ########################################################
 # Only Edit below this, if you know what you are doing #
 ########################################################
