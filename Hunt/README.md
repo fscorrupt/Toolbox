@@ -27,7 +27,7 @@ The script relys on 4 Variables.
 
 Hunt-HighPingChecker.ps1
 
-![)
+![Hunt-HighPingChecker]()
 
 # Issues
 Probably. Just let me know and I will try to correct.
