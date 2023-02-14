@@ -10,7 +10,7 @@ The script relys on 4 Variables.
 | ----------- | ----------- |
 | $whoispath      | The Folder where the script downloads&extract Sysinternal tool `WhoIs`       |
 | $ExeToMonitor   | Huntgame.exe (must be running)        |
-| $PortToMonitor    | Defaulted to 610        |
+| $PortToMonitor    | Defaulted to 610xx        |
 | $MaxPing  | Enter The reply ping  you are ok with, everything above that value will be shown as `Error`        |
 
 # Script Flow
