@@ -5,8 +5,8 @@ $whoisDownload = "https://download.sysinternals.com/files/WhoIs.zip"
 # You can Edit those Lines to fit your needs! #
 ###############################################
 $whoispath = "C:\temp\whois"
-$ExeToMonitor = "MyExe.exe" 
-$PortToMonitor = "11111"
+$ExeToMonitor = "NameOfEXE.exe" 
+$PortToMonitor = "PortToMonitor"
 $MaxPing = '100'
 $PublicIp = Invoke-RestMethod http://ipinfo.io/json
 ########################################################
@@ -101,7 +101,7 @@ if ($id) {
                 }
                 if ($Error){
                     $test = (Test-NetConnection $route -Hops 6 -ErrorAction SilentlyContinue -WarningAction SilentlyContinue).PingReplyDetails.RoundtripTime
-                    $resolveDNSName = (Resolve-DNSName $route).NameHost
+                    $resolveDNSName = (Resolve-DNSName $route -ErrorAction SilentlyContinue -ErrorVariable DNSError).NameHost
                 }
                 if ($test.count -eq '1'){
                     $AveragePing = $test
@@ -109,7 +109,7 @@ if ($id) {
                 Else {
                     $AveragePing = ($test | Measure-Object -Average).Average
                     $AveragePing = [MATH]::Round($AveragePing,2)
-                    $resolveDNSName = (Resolve-DNSName $route).NameHost
+                    $resolveDNSName = (Resolve-DNSName $route -ErrorAction SilentlyContinue -ErrorVariable DNSError).NameHost
                 }
                 
                 if ($AveragePing -gt $MaxPing) {
@@ -136,6 +136,10 @@ if ($id) {
                     Write-Host "for IP: " -NoNewline -ForegroundColor Cyan
                     Write-Host "$route" -NoNewline -ForegroundColor Green
                     Write-Host ", no further action needed." -ForegroundColor Cyan
+                    If ($DNSError){
+                        Write-Host "        Error during DNS resolve for: " -NoNewline -ForegroundColor Red
+                        Write-Host "$route" -ForegroundColor Yellow
+                    }
                     if ($resolveDNSName.count -eq 1){
                         Write-Host "        DNS Name is: " -NoNewline -ForegroundColor Yellow
                         Write-Host "$resolveDNSName"-ForegroundColor Green
@@ -159,7 +163,9 @@ if ($id) {
     }
 }
 Else {
-    Write-Host "    Please start $ExeToMonitor before you run this script..." -ForegroundColor Red
+    Write-Host "    Please start " -NoNewline -ForegroundColor Red
+    Write-Host "$ExeToMonitor " -NoNewline -ForegroundColor Yellow
+    Write-Host "before you run this script..." -ForegroundColor Red
 }
 
 pause
