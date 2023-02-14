@@ -10,7 +10,7 @@ The script relys on 4 Variables.
 | ----------- | ----------- |
 | $whoispath      | The Folder where the script downloads&extract Sysinternal tool `WhoIs`       |
 | $ExeToMonitor   | The Exe you want to get netstat data from (must be running)        |
-| $PortToMonitor    | The port you want to find in netstat        |
+| $PortToMonitor    | The port you want to find in netstat, if no port is specified, the script will select first ip from netstat      |
 | $MaxPing  | Enter The reply ping  you are ok with, everything above that value will be shown as `Error`        |
 
 # Script Flow
