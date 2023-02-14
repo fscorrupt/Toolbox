@@ -27,7 +27,7 @@ The script relys on 4 Variables.
 
 HighPingChecker.ps1
 
-![HighPingChecker.ps1]()
+![HighPingChecker.ps1](https://i.imgur.com/4G8Ksme.png)
 
 # Issues
 Probably. Just let me know and I will try to correct.
