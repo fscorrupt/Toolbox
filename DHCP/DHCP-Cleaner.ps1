@@ -179,7 +179,7 @@ if ($csvEntries) {
             $ToDelete += $entryinfo
 
             # Remove Reservation
-            $missing | Remove-DhcpServerv4Reservation -WhatIf
+            $missing | Remove-DhcpServerv4Reservation
             Write-Log -Component "Main" -Type Warning -Message "DHCP reservation removed for - IP: $($entryinfo.ip) | Name: $($entryinfo.Name) | MAC: $($entryinfo.MAC) | MAC: $($entryinfo.Description)"
         }
         if ($ToDelete){
@@ -231,7 +231,7 @@ if ($csvEntries) {
                     $staleDeletedEntrytemp | Add-Member -MemberType NoteProperty -Name "Description" -Value $DHCPReservation.Description
                     $StaleDeletedEntries += $staleDeletedEntrytemp
                     # Remove Reservation
-                    $DHCPReservation | Remove-DhcpServerv4Reservation -WhatIf
+                    $DHCPReservation | Remove-DhcpServerv4Reservation
                     Write-Log -Component "Main" -Type Warning -Message "DHCP reservation removed for - IP: $($staleDeletedEntrytemp.IP) | Name: $($staleDeletedEntrytemp.Name) | MAC: $($staleDeletedEntrytemp.MAC) | Description: $($staleDeletedEntrytemp.Description)"   
                 }
             }
