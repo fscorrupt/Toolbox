@@ -20,7 +20,8 @@ You don't even need to download the script. Just run this in PowerShell:
 irm "https://raw.githubusercontent.com/fscorrupt/Toolbox/main/Github/YearInReview.ps1" | iex; Get-RepoStats -Repo "fscorrupt/posterizarr" -Highlight "Reached a stable v1.0 and improved community documentation!"
 ```
 ### Example Output:
-<img width="1738" height="993" alt="image" src="https://github.com/user-attachments/assets/1c760a66-eadf-44ce-90d2-d810edd75f03" />
+<img width="1647" height="1116" alt="image" src="https://github.com/user-attachments/assets/7b0701ab-5b74-4743-97fc-98d568a1ff5c" />
+
 
 <img width="1396" height="1009" alt="image" src="https://github.com/user-attachments/assets/3f073ddf-8e79-461c-aa91-9e6bceb0c94a" />
 
