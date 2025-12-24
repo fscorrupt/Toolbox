@@ -130,7 +130,6 @@ I couldn't have done this without you! Thank you for your contributions, feedbac
 *Cheers*
 "@
 
-    Clear-Host
     Write-Host "✅ Done! Copy the text below for Discord:" -ForegroundColor Green
     Write-Host "--------------------------------------------------"
     $msg
